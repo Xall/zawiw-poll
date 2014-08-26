@@ -58,8 +58,8 @@ function zawiw_poll_shortcode() {
         // Select all polls where id is _GET[id]
         $zawiw_poll_query = 'SELECT * FROM ';
         $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
-        $zawiw_poll_query .= 'WHERE id='.$_GET['id'];
-        $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+        $zawiw_poll_query .= 'WHERE id = %d';
+        $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $_GET['id'] ), ARRAY_A );
 
         // Returns first item if available, otherwise return zero
         $zawiw_poll_item = isset( $zawiw_poll_item[0] ) ? $zawiw_poll_item[0] : 0;
@@ -107,10 +107,10 @@ function zawiw_poll_shortcode() {
                     $current_user = wp_get_current_user();
                     $zawiw_poll_query = 'SELECT * FROM ';
                     $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_part ';
-                    $zawiw_poll_query .= 'WHERE poll='.$_GET['id'];
-                    $zawiw_poll_query .= ' AND appointment="'.$zawiw_poll_item['DT'.$i].'" ORDER BY user ASC';
+                    $zawiw_poll_query .= 'WHERE poll = %d';
+                    $zawiw_poll_query .= ' AND appointment = %s ORDER BY user ASC';
                     // $zawiw_poll_query .= ' AND user="'.$current_user->ID.'"';
-                    $zawiw_poll_participants = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+                    $zawiw_poll_participants = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $_GET['id'], $zawiw_poll_item['DT'.$i] ), ARRAY_A );
                     if (!count($zawiw_poll_participants)) {
                         echo "Niemand";
                     }
@@ -138,7 +138,7 @@ function zawiw_poll_shortcode() {
         <?php
     }else { // STANDARD CASE
 ?>
-    <h1>Umfragen</h1>
+    <h1>Neue Umfrage</h1>
     <a href="?new">Klicken Sie hier um eine neue Umfrage zu starten.</a>
     <h1 id="polls">Bisherige Umfragen finden Sie hier</h1>
     <?php
@@ -147,7 +147,7 @@ function zawiw_poll_shortcode() {
         $zawiw_poll_query = 'SELECT * FROM ';
         $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
         $zawiw_poll_query .= 'ORDER by createDT DESC';
-        $zawiw_poll_items = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+        $zawiw_poll_items = $wpdb->get_results( $zawiw_poll_query, ARRAY_A );
         foreach ( $zawiw_poll_items as $item ) {
             $dt = date_create($item['createDT']);
             echo date_format( $dt, 'm.d.Y ' )."<a href=?id=".$item['id'].">".$item['title']."</a><br />";

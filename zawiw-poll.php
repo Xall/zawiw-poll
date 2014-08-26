@@ -3,10 +3,10 @@
 Plugin Name: ZAWiW Poll
 Plugin URI:
 Description: Einfache Ja/Nein Terminfindung
-Version: 1.0
+Version: 1.0.1
 Author: Simon Volpert
 Author URI: http://svolpert.eu
-License: MIT 
+License: MIT
 */
 
 // Global to share messages after update;

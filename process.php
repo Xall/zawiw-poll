@@ -89,8 +89,8 @@ function zawiw_poll_process_participate() {
     // Query the database to get currently active poll and its appointments
     $zawiw_poll_query = 'SELECT * FROM ';
     $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
-    $zawiw_poll_query .= 'WHERE id='.$_GET['id'];
-    $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+    $zawiw_poll_query .= 'WHERE id = %d';
+    $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $_GET['id'] ), ARRAY_A );
     $zawiw_poll_item = isset( $zawiw_poll_item[0] ) ? $zawiw_poll_item[0] : '';
     if ( $zawiw_poll_item == '' ) {
         $zawiw_poll_message = 'Fehler. Umfrage konnte nicht gefunden werden. ';
@@ -115,10 +115,10 @@ function zawiw_poll_process_participate() {
         // Check if already participating by selectiong where id and datetime match
         $zawiw_poll_query = 'SELECT * FROM ';
         $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_part ';
-        $zawiw_poll_query .= 'WHERE poll='.$_GET['id'];
-        $zawiw_poll_query .= ' AND appointment="'.$zawiw_poll_item['DT'.$i].'"';
-        $zawiw_poll_query .= ' AND user="'.$current_user->ID.'"';
-        $zawiw_poll_appointment = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+        $zawiw_poll_query .= 'WHERE poll = %d';
+        $zawiw_poll_query .= ' AND appointment = %s ';
+        $zawiw_poll_query .= ' AND user = %d ';
+        $zawiw_poll_appointment = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $_GET['id'], $zawiw_poll_item['DT'.$i], $current_user->ID ), ARRAY_A );
         $zawiw_poll_appointment = isset( $zawiw_poll_appointment[0] ) ? $zawiw_poll_appointment[0] : '';
 
         // If user would like to participate in # appointment
