@@ -15,6 +15,7 @@ function zawiw_poll_shortcode() {
         echo '<p>Sie müssen angemeldet sein, um diese Funktion zu nutzen</p>';
         return;
     }
+    // Prints the message if it isn't empty
     if ( strlen( $zawiw_poll_message ) ) {
         echo "<div class='message'>$zawiw_poll_message</div>";
     }
@@ -54,15 +55,22 @@ function zawiw_poll_shortcode() {
         </div>
 <?php
     }elseif ( isset( $_GET['id'] ) ) { // EXISTING POLL CASE
-        global $wpdb;
-        // Select all polls where id is _GET[id]
-        $zawiw_poll_query = 'SELECT * FROM ';
-        $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
-        $zawiw_poll_query .= 'WHERE id='.$_GET['id'];
-        $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
 
-        // Returns first item if available, otherwise return zero
-        $zawiw_poll_item = isset( $zawiw_poll_item[0] ) ? $zawiw_poll_item[0] : 0;
+        if ( !is_numeric( $_GET['id'] ) ) {
+            $zawiw_poll_item = null;
+        }
+        else{
+            global $wpdb;
+            // Select all polls where id is _GET[id]
+            $zawiw_poll_query = 'SELECT * FROM ';
+            $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
+            $zawiw_poll_query .= 'WHERE id='.$_GET['id'];
+            $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+
+            // Returns first item if available, otherwise return zero
+            $zawiw_poll_item = isset( $zawiw_poll_item[0] ) ? $zawiw_poll_item[0] : 0;
+
+        }
 
         // Error case
         if ( !$zawiw_poll_item ) {
@@ -70,23 +78,14 @@ function zawiw_poll_shortcode() {
             return;
         }
 
-        // Render the poll
-        // echo "<pre>";
-        // print_r($zawiw_poll_item);
-        // echo "</pre>";
         ?>
         <div id="zawiw_poll_id">
             <form action="" method="post" enctype="multipart/form-data">
             <div class="meta">
                 <h2 class="title"><?php echo $zawiw_poll_item['title'] ?></h2>
                 <div class="owner"><i class="fa fa-user"></i>
-                    <?php echo get_userdata( $zawiw_poll_item['owner'] )?get_userdata( $zawiw_poll_item['owner'] )->user_login:"Unbekannt" ?>
+                    <?php echo get_userdata( $zawiw_poll_item['owner'] ) ? get_userdata( $zawiw_poll_item['owner'] )->display_name : "Unbekannt" ?>
                 </div>
-                <!-- <div class="time"><i class="fa fa-calendar"></i> -->
-                    <?php
-                    //echo date_format( date_create($zawiw_poll_item['createDT']), 'm.d.Y H:i')
-                     ?>
-                <!-- </div> -->
                 <div class="place"><i class="fa fa-home"></i>
                     <?php echo $zawiw_poll_item['place']; ?>
                 </div>
@@ -103,22 +102,21 @@ function zawiw_poll_shortcode() {
                     </div>
                     <div class="participants"><i class="fa fa-check"></i>Bisherige Teilnehmer:
                     <?php
-                    $i_participate = 0;
                     $current_user = wp_get_current_user();
                     $zawiw_poll_query = 'SELECT * FROM ';
                     $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_part ';
                     $zawiw_poll_query .= 'WHERE poll='.$_GET['id'];
                     $zawiw_poll_query .= ' AND appointment="'.$zawiw_poll_item['DT'.$i].'" ORDER BY user ASC';
-                    // $zawiw_poll_query .= ' AND user="'.$current_user->ID.'"';
                     $zawiw_poll_participants = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
                     if (!count($zawiw_poll_participants)) {
                         echo "Niemand";
                     }
 
-
+                    // Remeber if I participate
+                    $i_participate = 0;
                     foreach ($zawiw_poll_participants as $participant) {
                         echo "<span class='participant'>";
-                        echo get_userdata( $participant['user'] )?get_userdata( $participant['user'] )->user_login:"Unbekannt";
+                        echo get_userdata( $participant['user'] ) ? get_userdata( $participant['user'] )->display_name : "Unbekannt";
                         echo "</span>";
                         $i_participate = get_userdata( $participant['user'] ) == wp_get_current_user() ? 1 : $i_participate;
                     }
@@ -127,7 +125,7 @@ function zawiw_poll_shortcode() {
                     <!-- Form protection -->
                     <?php wp_nonce_field( 'zawiw_poll_participate' ); ?>
                     <label for="part<?php echo $i ?>">Teilnehmen? </label>
-                    <input class="checkbox" type="checkbox" id="part<?php echo $i ?>" name="part<?php echo $i ?>" <?php echo $i_participate ? "checked" : "" ?> value="1">
+                    <input class="checkbox" type="checkbox" id="part<?php echo $i ?>" name="part<?php echo $i ?>" <?php echo $i_participate ? "checked" : "" ?> value="1" />
                     <input type="hidden" name="zawiw_poll" value="participate" />
                 </div>
             <?php endif ?>
@@ -138,7 +136,7 @@ function zawiw_poll_shortcode() {
         <?php
     }else { // STANDARD CASE
 ?>
-    <h1>Umfragen</h1>
+    <h1>Neue Umfrage</h1>
     <a href="?new">Klicken Sie hier um eine neue Umfrage zu starten.</a>
     <h1 id="polls">Bisherige Umfragen finden Sie hier</h1>
     <?php
