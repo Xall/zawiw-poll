@@ -55,6 +55,12 @@ function zawiw_poll_shortcode() {
         </div>
 <?php
     }elseif ( isset( $_GET['id'] ) ) { // EXISTING POLL CASE
+        global $wpdb;
+        // Select all polls where id is _GET[id]
+        $zawiw_poll_query = 'SELECT * FROM ';
+        $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
+        $zawiw_poll_query .= 'WHERE id = %d';
+        $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $_GET['id'] ), ARRAY_A );
 
         if ( !is_numeric( $_GET['id'] ) ) {
             $zawiw_poll_item = null;
@@ -105,9 +111,10 @@ function zawiw_poll_shortcode() {
                     $current_user = wp_get_current_user();
                     $zawiw_poll_query = 'SELECT * FROM ';
                     $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_part ';
-                    $zawiw_poll_query .= 'WHERE poll='.$_GET['id'];
-                    $zawiw_poll_query .= ' AND appointment="'.$zawiw_poll_item['DT'.$i].'" ORDER BY user ASC';
-                    $zawiw_poll_participants = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+                    $zawiw_poll_query .= 'WHERE poll = %d';
+                    $zawiw_poll_query .= ' AND appointment = %s ORDER BY user ASC';
+                    // $zawiw_poll_query .= ' AND user="'.$current_user->ID.'"';
+                    $zawiw_poll_participants = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $_GET['id'], $zawiw_poll_item['DT'.$i] ), ARRAY_A );
                     if (!count($zawiw_poll_participants)) {
                         echo "Niemand";
                     }
@@ -145,7 +152,7 @@ function zawiw_poll_shortcode() {
         $zawiw_poll_query = 'SELECT * FROM ';
         $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
         $zawiw_poll_query .= 'ORDER by createDT DESC';
-        $zawiw_poll_items = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, null ), ARRAY_A );
+        $zawiw_poll_items = $wpdb->get_results( $zawiw_poll_query, ARRAY_A );
         foreach ( $zawiw_poll_items as $item ) {
             $dt = date_create($item['createDT']);
             echo date_format( $dt, 'm.d.Y ' )."<a href=?id=".$item['id'].">".$item['title']."</a><br />";
