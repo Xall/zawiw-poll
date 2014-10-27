@@ -11,3 +11,4 @@ Changelog
 * 1.0.3 Better display of usernames
 * 1.0.4 Redirect after new poll
 * 1.0.5 Beautified and added messages
+* 1.1 Highlighting of the appointment with most participants
