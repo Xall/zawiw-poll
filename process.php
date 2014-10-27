@@ -124,6 +124,7 @@ function zawiw_poll_process_participate() {
                 $wpdb->delete( $wpdb->get_blog_prefix() . 'zawiw_poll_part', array( 'ID' => $zawiw_poll_appointment['id'] ) );
             }
         }
+        $zawiw_poll_message = "Änderungen gespeichert";
 
     }
 }

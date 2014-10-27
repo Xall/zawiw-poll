@@ -33,3 +33,10 @@
 #polls{
     margin-top: 20px;
 }
+
+#zawiw-poll-message{
+    border: 1px solid #fff000;
+    background-color: #fff777;
+    padding: 10px;
+    margin-bottom: 10px;
+}

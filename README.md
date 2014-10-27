@@ -10,3 +10,4 @@ Changelog
 * 1.0.2 Preventing SQL injection on GET
 * 1.0.3 Better display of usernames
 * 1.0.4 Redirect after new poll
+* 1.0.5 Beautified and added messages

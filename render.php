@@ -17,7 +17,7 @@ function zawiw_poll_shortcode() {
     }
     // Prints the message if it isn't empty
     if ( strlen( $zawiw_poll_message ) ) {
-        echo "<div class='message'>$zawiw_poll_message</div>";
+        echo "<div id='zawiw-poll-message'>$zawiw_poll_message</div>";
     }
 
     // GET SWITCH
@@ -80,7 +80,7 @@ function zawiw_poll_shortcode() {
 
         // Error case
         if ( !$zawiw_poll_item ) {
-            echo "<div class='message'>Umfrage konnte nicht gefunden werden.</div>";
+            echo "<div id='zawiw-poll-message'>Umfrage konnte nicht gefunden werden.</div>";
             return;
         }
 
@@ -158,7 +158,7 @@ function zawiw_poll_shortcode() {
             echo date_format( $dt, 'm.d.Y ' )."<a href=?id=".$item['id'].">".$item['title']."</a><br />";
         }
         if (!sizeof($zawiw_poll_items)) {
-            echo "<div class='message'>Bisher keine Umfragen vorhanden</div>";
+            echo "<div id='zawiw-poll-message'>Bisher keine Umfragen vorhanden</div>";
         }
     }
 
