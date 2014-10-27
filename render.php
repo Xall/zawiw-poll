@@ -158,7 +158,7 @@ function zawiw_poll_shortcode() {
             echo date_format( $dt, 'm.d.Y ' )."<a href=?id=".$item['id'].">".$item['title']."</a><br />";
         }
         if (!sizeof($zawiw_poll_items)) {
-            echo "<p>Bisher keine Umfragen vorhanden</p>";
+            echo "<div class='message'>Bisher keine Umfragen vorhanden</div>";
         }
     }
 

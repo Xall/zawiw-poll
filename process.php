@@ -63,7 +63,8 @@ function zawiw_poll_process_new() {
     global $wpdb;
     $wpdb->insert( $wpdb->get_blog_prefix() . 'zawiw_poll_data', $poll_data );
 
-    $zawiw_poll_message = "Umfrage erfolgreich hinzugefügt.";
+    header('Location: '.get_permalink().'?id='.$wpdb->insert_id);
+
 
 }
 
