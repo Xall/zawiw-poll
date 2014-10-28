@@ -13,3 +13,5 @@ Changelog
 * 1.0.5 Beautified and added messages
 * 1.1 Highlighting of the appointment with most participants
 * 1.2 Delete a poll (admin and owner)
+* 1.2.1 Delete a poll (admin and owner)
+* 1.3 Message system for user feedback using transients

@@ -20,7 +20,6 @@ function zawiw_poll_process() {
 function zawiw_poll_process_new() {
     // Validate POST
 
-    global $zawiw_poll_message;
     // echo "<pre>";
     // print_r( $_POST );
     // echo "</pre>";
@@ -38,7 +37,7 @@ function zawiw_poll_process_new() {
     // Form validation
     foreach ( $poll_data as $data ) {
         if ( !strlen( $data ) ) {
-            $zawiw_poll_message = "Fehler der Eingabe. Bitte füllen Sie alle Felder aus.";
+            set_transient( $zawiw_poll_transient, "Fehler der Eingabe. Bitte füllen Sie alle Felder aus.", 5 );
             return;
         }
     }
@@ -58,7 +57,7 @@ function zawiw_poll_process_new() {
     }
 
     if ( $dt_count < 1 ) {
-        $zawiw_poll_message = "Fehler der Eingabe. Bitte geben Sie korrekte Datum/Zeitangaben an.";
+        set_transient( $zawiw_poll_transient, "Fehler der Eingabe. Bitte geben Sie korrekte Datum/Zeitangaben an.", 5 );
         return;
     }
 
@@ -66,13 +65,14 @@ function zawiw_poll_process_new() {
     global $wpdb;
     $wpdb->insert( $wpdb->get_blog_prefix() . 'zawiw_poll_data', $poll_data );
 
-    header('Location: '.get_permalink().'?id='.$wpdb->insert_id);
+    set_transient( $zawiw_poll_transient, "Umfrage erfolgreich erstellt", 5 );
+
+    header('Location: '.get_permalink());
 
 
 }
 
 function zawiw_poll_process_participate() {
-    global $zawiw_poll_message;
     global $wpdb;
 
     // Query the database to get currently active poll and its appointments
@@ -82,7 +82,7 @@ function zawiw_poll_process_participate() {
     $zawiw_poll_item = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $_GET['id'] ), ARRAY_A );
     $zawiw_poll_item = isset( $zawiw_poll_item[0] ) ? $zawiw_poll_item[0] : null;
     if ( $zawiw_poll_item == '' ) {
-        $zawiw_poll_message = 'Fehler. Umfrage konnte nicht gefunden werden. ';
+        set_transient( $zawiw_poll_transient, 'Fehler. Umfrage konnte nicht gefunden werden. ', 5 );
         return;
     }
 
@@ -127,12 +127,11 @@ function zawiw_poll_process_participate() {
                 $wpdb->delete( $wpdb->get_blog_prefix() . 'zawiw_poll_part', array( 'ID' => $zawiw_poll_appointment['id'] ) );
             }
         }
-        $zawiw_poll_message = "Änderungen gespeichert";
+        set_transient( $zawiw_poll_transient, "Änderungen gespeichert", 5 );
 
     }
 }
 function zawiw_poll_process_delete($id){
-    global $zawiw_poll_message;
     global $wpdb;
 
     // Check if already participating by selectiong where id and datetime match
@@ -146,14 +145,15 @@ function zawiw_poll_process_delete($id){
         if($zawiw_poll_data_delete['owner'] == get_current_user_id() OR current_user_can( 'manage_options' )){
             $wpdb->delete( $wpdb->get_blog_prefix() . 'zawiw_poll_part', array( 'poll' => $id ) );
             $wpdb->delete( $wpdb->get_blog_prefix() . 'zawiw_poll_data', array( 'ID' => $id ) );
+            set_transient( $zawiw_poll_transient, "Umfrage erfolgreich gelöscht", 5 );
             header('Location: '.get_permalink());
         }
         else{
-            $zawiw_poll_message = "Sie besitzen nicht die nötigen Rechte um dies zu tun!";
+            set_transient( $zawiw_poll_transient, "Sie besitzen nicht die nötigen Rechte um dies zu tun!", 5 );
         }
     }
     else{
-        $zawiw_poll_message = "Keine gültige Umfrage gefunden!";
+        set_transient( $zawiw_poll_transient, "Keine gültige Umfrage gefunden!", 5 );
         return;
     }
 }

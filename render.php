@@ -8,16 +8,14 @@ add_action( 'wp_enqueue_scripts', 'zawiw_poll_queue_stylesheet' );
 add_action( 'wp_enqueue_scripts', 'zawiw_poll_queue_script' );
 
 function zawiw_poll_shortcode() {
-    global $zawiw_poll_message;
-
     // Is user logged in?
     if ( !is_user_logged_in() ) {
-        echo '<p>Sie müssen angemeldet sein, um diese Funktion zu nutzen</p>';
+        echo "<div id='zawiw-poll-message'>Sie müssen angemeldet sein, um diese Funktion zu nutzen</div>";
         return;
     }
     // Prints the message if it isn't empty
-    if ( strlen( $zawiw_poll_message ) ) {
-        echo "<div id='zawiw-poll-message'>$zawiw_poll_message</div>";
+    if ( strlen( get_transient( $zawiw_poll_transient ) ) ) {
+        echo "<div id='zawiw-poll-message'>".get_transient( $zawiw_poll_transient )."</div>";
     }
 
     // GET SWITCH
