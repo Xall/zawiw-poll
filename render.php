@@ -21,13 +21,24 @@ function zawiw_poll_shortcode() {
     }
 
     // GET SWITCH
-    if ( isset( $_GET['new'] ) ){ //NEW POLL CASE
+
+    // NEW POLL CASE
+    if ( isset( $_GET['new'] ) ){
         zawiw_poll_new();
     }
-    elseif ( isset( $_GET['id'] ) ){ // EXISTING POLL CASE
+
+    // EXISTING POLL CASE
+    elseif ( isset( $_GET['id'] ) ){
         zawiw_poll_get();
     }
-    else{ // STANDARD CASE
+
+    // DELETE POLL CASE
+    elseif ( isset( $_GET['del'] ) ){
+        zawiw_poll_del($_GET['del']);
+    }
+
+    // STANDARD CASE
+    else{
         zawiw_poll_std();
     }
 
@@ -167,6 +178,20 @@ function zawiw_poll_get(){
 <?php
 }
 
+function zawiw_poll_del($id){
+?>
+    <p>Wollen Sie Umfrage wirklich unwiderruflich löschen?</p>
+    <form action="" method="post" enctype="multipart/form-data">
+        <?php wp_nonce_field( 'zawiw_poll_delete' ); ?>
+        <input type="hidden" name="zawiw_poll" value="delete" />
+        <input type="submit" value="Löschen">
+        <input type="button" onClick="history.go(-1);return true;" value="Zurück">
+
+    </form>
+
+<?php
+}
+
 function zawiw_poll_std(){
 ?>
     <h1>Neue Umfrage</h1>
@@ -181,7 +206,15 @@ function zawiw_poll_std(){
         $zawiw_poll_items = $wpdb->get_results( $zawiw_poll_query, ARRAY_A );
         foreach ( $zawiw_poll_items as $item ) {
             $dt = date_create($item['createDT']);
-            echo date_format( $dt, 'm.d.Y ' )."<a href=?id=".$item['id'].">".$item['title']."</a><br />";
+            // Echo the poll with creation date and link
+            echo date_format( $dt, 'm.d.Y ' )."<a href=?id=".$item['id'].">".$item['title']."</a>";
+            // Buttons for owner and admin
+            if ($item['owner'] == get_current_user_id()) {
+                echo "<a class='zawiw_poll_btn' href=?del=".$item['id']."><i class='fa fa-trash'></i></a>";
+            }
+            echo "<br />";
+
+
         }
         if (!sizeof($zawiw_poll_items)) {
             echo "<div id='zawiw-poll-message'>Bisher keine Umfragen vorhanden</div>";
@@ -190,7 +223,7 @@ function zawiw_poll_std(){
 
 function zawiw_poll_queue_stylesheet() {
     wp_enqueue_style( 'zawiw_poll_style', plugins_url( 'style.css', __FILE__ ) );
-    wp_enqueue_style( 'font_awesome', '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css' );
+    wp_enqueue_style( 'font_awesome4.2', '//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' );
 }
 
 function zawiw_poll_queue_script() {
