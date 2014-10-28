@@ -209,7 +209,7 @@ function zawiw_poll_std(){
             // Echo the poll with creation date and link
             echo date_format( $dt, 'm.d.Y ' )."<a href=?id=".$item['id'].">".$item['title']."</a>";
             // Buttons for owner and admin
-            if ($item['owner'] == get_current_user_id()) {
+            if ($item['owner'] == get_current_user_id() OR current_user_can( 'manage_options' )) {
                 echo "<a class='zawiw_poll_btn' href=?del=".$item['id']."><i class='fa fa-trash'></i></a>";
             }
             echo "<br />";

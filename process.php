@@ -139,21 +139,18 @@ function zawiw_poll_process_delete($id){
     $zawiw_poll_query = 'SELECT * FROM ';
     $zawiw_poll_query .= $wpdb->get_blog_prefix() . 'zawiw_poll_data ';
     $zawiw_poll_query .= 'WHERE id = %d';
-    $zawiw_poll_query .= ' AND owner = %d ';
-    $zawiw_poll_data_delete = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $id, get_current_user_id() ), ARRAY_A );
+    $zawiw_poll_data_delete = $wpdb->get_results( $wpdb->prepare( $zawiw_poll_query, $id ), ARRAY_A );
     $zawiw_poll_data_delete = isset( $zawiw_poll_data_delete[0] ) ? $zawiw_poll_data_delete[0] : null;
 
-    if ( is_numeric( $id ) ) {
-        if ($zawiw_poll_data_delete) {
+    if ( is_numeric( $id ) AND $zawiw_poll_data_delete ) {
+        if($zawiw_poll_data_delete['owner'] == get_current_user_id() OR current_user_can( 'manage_options' )){
             $wpdb->delete( $wpdb->get_blog_prefix() . 'zawiw_poll_part', array( 'poll' => $id ) );
             $wpdb->delete( $wpdb->get_blog_prefix() . 'zawiw_poll_data', array( 'ID' => $id ) );
             header('Location: '.get_permalink());
-
         }
         else{
             $zawiw_poll_message = "Sie besitzen nicht die nötigen Rechte um dies zu tun!";
         }
-
     }
     else{
         $zawiw_poll_message = "Keine gültige Umfrage gefunden!";
