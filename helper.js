@@ -1,4 +1,21 @@
 jQuery( document ).ready(function() {
+
+    // Setting up datetimepicker
+    for (var i = 1; i < 6; i++) {
+        jQuery('.datetimepicker'+i).datetimepicker({
+            lang:'de',
+            format: 'd.m.Y H:i',
+            timepicker:true,
+            step: 15,
+            defaultDate: false,
+            defaultTime: false,
+            allowBlank: true
+
+        })
+    };
+
+
+
     array = jQuery("#zawiw_poll_id .appointment");
 
     // Sorting all appointments by participants

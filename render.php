@@ -1,5 +1,4 @@
 <?php
-
 // Defines the zawiw-poll shortcode
 add_shortcode( 'zawiw_poll', 'zawiw_poll_shortcode' );
 
@@ -8,13 +7,16 @@ add_action( 'wp_enqueue_scripts', 'zawiw_poll_queue_stylesheet' );
 add_action( 'wp_enqueue_scripts', 'zawiw_poll_queue_script' );
 
 function zawiw_poll_shortcode() {
+
+    global $zawiw_poll_transient;
+
     // Is user logged in?
     if ( !is_user_logged_in() ) {
         echo "<div id='zawiw-poll-message'>Sie müssen angemeldet sein, um diese Funktion zu nutzen</div>";
         return;
     }
     // Prints the message if it isn't empty
-    if ( strlen( get_transient( $zawiw_poll_transient ) ) ) {
+    if ( get_transient( $zawiw_poll_transient ) ) {
         echo "<div id='zawiw-poll-message'>".get_transient( $zawiw_poll_transient )."</div>";
     }
 
@@ -48,25 +50,14 @@ function zawiw_poll_new(){
             <!-- Form protection -->
             <?php wp_nonce_field( 'zawiw_poll_new' ); ?>
             <label for="title">Titel</label>
-            <input type="text" name="title" id="title"><br>
+            <input type="text" name="title" id="title" value="<?php echo $_POST['title'] ?>"><br>
             <label for="place">Ort</label>
-            <input type="text" name="place" id="place"><br>
+            <input type="text" name="place" id="place" value="<?php echo $_POST['place'] ?>"><br>
             <label for="description">Beschreibung</label>
-            <input type="text" name="description" id="description"><br>
-            <i>Termine sind im Format tag.monat.jahr stunde:minute einzugeben</i><br>
+            <input type="text" name="description" id="description" value="<?php echo $_POST['description'] ?>"><br>
             <?php for ( $d = 1; $d <= 5 ; $d++ ): ?>
-                <div class="number first one-sixth">
-                    <label for="dt<?php echo $d; ?>">Termin <?php echo $d; ?></label>
-                </div>
-                <div class="date three-sixths">
-                    <input class="twochar" name="dt<?php echo $d ?>d" id="dt<?php echo $d ?>d" maxlength="2" type="text" size="1">.
-                    <input class="twochar" name="dt<?php echo $d ?>m" id="dt<?php echo $d ?>m" maxlength="2" type="text" size="1">.
-                    <input class="fourchar" name="dt<?php echo $d ?>y" id="dt<?php echo $d ?>y" maxlength="4" type="text" size="4">
-                </div>
-                <div class="time two-sixths">
-                    <input class="twochar" name="dt<?php echo $d ?>h" id="dt<?php echo $d ?>h" maxlength="2" type="text" size="1">:
-                    <input class="twochar" name="dt<?php echo $d ?>i" id="dt<?php echo $d ?>i" maxlength="2" type="text" size="1"><br>
-                </div>
+                <label for="datetimepicker<?php echo $d?>">Termin <?php echo $d?></label>
+                <input name="datetimepicker<?php echo $d?>" class="datetimepicker<?php echo $d?>" type="text" value="<?php echo $_POST['datetimepicker'.$d] ?>">
             <?php endfor ?>
             <input type="submit" name="submit" value="Abschicken">
 
@@ -222,12 +213,19 @@ function zawiw_poll_std(){
 function zawiw_poll_queue_stylesheet() {
     wp_enqueue_style( 'zawiw_poll_style', plugins_url( 'style.css', __FILE__ ) );
     wp_enqueue_style( 'font_awesome4.2', '//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' );
+    wp_enqueue_style( 'datetimepickercss', plugins_url( 'datetimepicker/jquery.datetimepicker.css', __FILE__ ) );
 }
 
 function zawiw_poll_queue_script() {
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'zawiw_poll_script', plugins_url( 'helper.js', __FILE__ ) );
+    wp_enqueue_script( 'datetimepickerjs', plugins_url( 'datetimepicker/jquery.datetimepicker.js', __FILE__ ) );
 
 }
 
 ?>
+
+<!-- this should go after your </body> -->
+<!-- <link rel="stylesheet" type="text/css" href="datetimepicker/jquery.datetimepicker.css"/ >
+<script src="datetimepicker/jquery.js"></script>
+<script src="datetimepicker/jquery.datetimepicker.js"></script> -->

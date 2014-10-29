@@ -14,6 +14,12 @@
 #zawiw_poll_new i{
     color: #ccc;
 }
+#zawiw_poll_new input{
+    margin-bottom: 10px;
+    border-color: #aaa;
+    color: #333;
+}
+
 #zawiw_poll_id .appointment.green{
     background-color: #93E884;
 }

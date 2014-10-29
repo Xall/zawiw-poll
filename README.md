@@ -15,3 +15,4 @@ Changelog
 * 1.2 Delete a poll (admin and owner)
 * 1.2.1 Delete a poll (admin and owner)
 * 1.3 Message system for user feedback using transients
+* 1.4 jQuery datetime picker

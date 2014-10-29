@@ -18,12 +18,8 @@ function zawiw_poll_process() {
 }
 
 function zawiw_poll_process_new() {
-    // Validate POST
-
-    // echo "<pre>";
-    // print_r( $_POST );
-    // echo "</pre>";
-
+    global $wpdb;
+    global $zawiw_poll_transient;
 
     // Prepare an array to store in db
     $poll_data = array();
@@ -46,9 +42,7 @@ function zawiw_poll_process_new() {
     $dt_count = 0;
     for ( $i=1; $i < 6; $i++ ) {
         // Construct a datetime string
-        $datestring = $_POST['dt'.$i.'y'] .'/'. $_POST['dt'.$i.'m'] .'/'. $_POST['dt'.$i.'d'] .' '. $_POST['dt'.$i.'h'] .':'. $_POST['dt'.$i.'i'];
-
-        $datetime = date_create( $datestring );
+        $datetime = strlen($_POST['datetimepicker'.$i]) ? date_create( $_POST['datetimepicker'.$i]) : null;
         if ( !$datetime ) {
             continue;
         }
@@ -62,7 +56,6 @@ function zawiw_poll_process_new() {
     }
 
     // Update the db
-    global $wpdb;
     $wpdb->insert( $wpdb->get_blog_prefix() . 'zawiw_poll_data', $poll_data );
 
     set_transient( $zawiw_poll_transient, "Umfrage erfolgreich erstellt", 5 );
@@ -74,6 +67,7 @@ function zawiw_poll_process_new() {
 
 function zawiw_poll_process_participate() {
     global $wpdb;
+    global $zawiw_poll_transient;
 
     // Query the database to get currently active poll and its appointments
     $zawiw_poll_query = 'SELECT * FROM ';
@@ -133,6 +127,7 @@ function zawiw_poll_process_participate() {
 }
 function zawiw_poll_process_delete($id){
     global $wpdb;
+    global $zawiw_poll_transient;
 
     // Check if already participating by selectiong where id and datetime match
     $zawiw_poll_query = 'SELECT * FROM ';
