@@ -210,13 +210,20 @@ function zawiw_poll_std(){
         }
 }
 
+<?php
 function zawiw_poll_queue_stylesheet() {
+    global $post;   //Contains the whole site content
+    if(!has_shortcode($post->post_content, 'zawiw_poll'))   //Loads stylesheets only if shortcode exists
+        return;
     wp_enqueue_style( 'zawiw_poll_style', plugins_url( 'style.css', __FILE__ ) );
     wp_enqueue_style( 'font_awesome4.2', '//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' );
     wp_enqueue_style( 'datetimepickercss', plugins_url( 'datetimepicker/jquery.datetimepicker.css', __FILE__ ) );
 }
 
 function zawiw_poll_queue_script() {
+    global $post;   //Contains the whole site content
+    if(!has_shortcode($post->post_content, 'zawiw_poll'))   //Loads stylesheets only if shortcode exists
+        return;
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'zawiw_poll_script', plugins_url( 'helper.js', __FILE__ ) );
     wp_enqueue_script( 'datetimepickerjs', plugins_url( 'datetimepicker/jquery.datetimepicker.js', __FILE__ ) );
